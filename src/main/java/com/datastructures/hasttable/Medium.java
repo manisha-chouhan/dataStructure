@@ -1,6 +1,6 @@
 package com.datastructures.hasttable;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class Medium {
 
@@ -35,5 +35,43 @@ public class Medium {
             map.put(names[i], 1);
         }
         return names;
+    }
+
+    public List<List<String>> displayTable(List<List<String>> orders) {
+        TreeMap<String, HashMap<String, Integer>> map = new TreeMap<>((a, b) -> Integer.parseInt(a) - Integer.parseInt(b));
+        TreeSet<String> foodItems = new TreeSet<>();
+
+        for(List<String> order : orders) {
+            String table = order.get(1);
+            String food = order.get(2);
+            foodItems.add(food);
+            map.putIfAbsent(table, new HashMap<>());
+            HashMap<String, Integer> _map = map.get(table);
+            _map.put(food, _map.getOrDefault(food, 0) + 1);
+        }
+
+        List<List<String>> res = new LinkedList<>();
+        List<String> list = new LinkedList<>();
+        list.add("Table");
+
+        for(String foodItem : foodItems) {
+            list.add(foodItem);
+        }
+        res.add(list);
+
+        for(Map.Entry<String, HashMap<String, Integer>> entry : map.entrySet()) {
+            String table = entry.getKey();
+            HashMap<String, Integer> _map = entry.getValue();
+            list = new LinkedList<>();
+            list.add(table);
+
+            for(String foodItem : foodItems) {
+                if(_map.containsKey(foodItem)) list.add(_map.get(foodItem) + "");
+                else list.add("0");
+            }
+            res.add(list);
+        }
+
+        return res;
     }
 }

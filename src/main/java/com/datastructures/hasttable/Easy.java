@@ -46,4 +46,30 @@ public class Easy {
         }
         return sum;
     }
+
+    public String[] findOcurrences(String text, String first, String second) {
+        List<Integer> indexes = new ArrayList<>();
+        String[] words = text.split(" ");
+
+        for(int i = 0; i < words.length; i++) {
+            String word = words[i];
+            if(word.equals(first))indexes.add(i);
+        }
+
+        List<String> res = new ArrayList<>();
+
+        for(int i : indexes) {
+            if(i < words.length - 2) {
+                if(words[i + 1].equals(second))res.add(words[i + 2]);
+            }
+        }
+        String[] str = new String[res.size()];
+        int index = 0;
+        for(String s : res) {
+            str[index] = s;
+            index++;
+        }
+        return str;
+    }
+
 }
