@@ -217,4 +217,50 @@ public class Medium {
         return -1;
     }
 
+    int[][] direc = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+    //https://leetcode.com/problems/path-with-minimum-effort/
+    public int minimumEffortPath(int[][] heights) {
+        int n = heights.length;
+        int m = heights[0].length;
+        int[][] efforts = new int[n][m];
+
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                efforts[i][j] = Integer.MAX_VALUE;
+            }
+        }
+
+        efforts[0][0] = 0;
+
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0, 0});
+        int result = Integer.MAX_VALUE;
+
+        while(!q.isEmpty()) {
+            int size = q.size();
+            while(size > 0) {
+                int[] curr = q.poll();
+                if(curr[0] == n - 1 && curr[1] == m - 1) result = Math.min(result, efforts[curr[0]][curr[1]]);
+                size--;
+                for(int i = 0; i < 4; i++) {
+                    int x = curr[0] + direc[i][0];
+                    int y = curr[1] + direc[i][1];
+                    if(!isSafe(x, y, n, m)) continue;
+                    int _effort = Math.max(efforts[curr[0]][curr[1]], Math.abs(heights[x][y] - heights[curr[0]][curr[1]]));
+                    if(efforts[x][y] > _effort) {
+                        efforts[x][y] = _effort;
+                        q.offer(new int[]{x, y});
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public boolean isSafe(int x, int y, int n, int m) {
+        if(x < 0 || x >= n || y < 0 || y >= m) return false;
+        return true;
+    }
+
 }

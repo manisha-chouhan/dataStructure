@@ -1,9 +1,6 @@
 package com.datastructures.graph;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class Easy {
 
@@ -113,5 +110,42 @@ public class Easy {
 
         helper(root.left, depth + 1);
         helper(root.right, depth + 1);
+    }
+
+    //https://leetcode.com/problems/average-salary-excluding-the-minimum-and-maximum-salary/
+    public double average(int[] salary) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+
+        for(int i = 0; i < salary.length; i++) {
+            min = Math.min(min, salary[i]);
+            max = Math.max(max, salary[i]);
+        }
+        int count = 0;
+        int sum = 0;
+        for(int i = 0; i < salary.length; i++) {
+            if(min != salary[i] && max != salary[i]) {
+                sum += salary[i];
+                count++;
+            }
+        }
+        return ((double)sum/count);
+    }
+
+    //https://leetcode.com/problems/find-the-distance-value-between-two-arrays/
+    public int findTheDistanceValue(int[] arr1, int[] arr2, int d) {
+        Arrays.sort(arr2);
+        int count = 0;
+        for(int i = 0; i < arr1.length; i++) {
+            boolean flag = true;
+            for(int j = 0; j < arr2.length; j++) {
+                if(Math.abs(arr1[i] - arr2[j]) <= d) {
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag)count++;
+        }
+        return count;
     }
 }

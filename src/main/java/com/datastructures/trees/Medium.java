@@ -88,4 +88,20 @@ public class Medium {
         return result;
     }
 
+    //https://leetcode.com/problems/binary-tree-pruning/
+    public TreeNode pruneTree(TreeNode root) {
+        if(root == null) return null;
+        return helper(root) ? root : null;
+    }
+
+    public boolean helper(TreeNode root) {
+        if(root == null)return false;
+        if(root.left == null && root.right == null) return root.val == 1;
+        boolean left = helper(root.left);
+        boolean right = helper(root.right);
+        if(!left) root.left = null;
+        if(!right) root.right = null;
+        return root.val == 1 || left || right;
+    }
+
 }

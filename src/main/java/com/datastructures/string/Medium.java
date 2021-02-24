@@ -1,9 +1,6 @@
 package com.datastructures.string;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class Medium {
 
@@ -163,4 +160,37 @@ public class Medium {
     }
 
 
+    char[] arr = {'a', 'b', 'c'};
+    //https://leetcode.com/problems/the-k-th-lexicographical-string-of-all-happy-strings-of-length-n/
+    public String getHappyString(int n, int k) {
+        String s = "";
+        List<String> list = new ArrayList<>();
+        helper(s, list, n);
+        Collections.sort(list);
+        return list.size() < k ? "" : list.get(k - 1);
+    }
+
+    public void helper(String s, List<String> list, int n) {
+        if(s.length() == n) {
+            list.add(s);
+            return;
+        }
+        for(int j = 0; j < 3; j++) {
+            if(s.length() == 0) {
+                String temp = new String(s);
+                s = s +""+ arr[j];
+                helper(s, list, n);
+                s = temp;
+            }
+            else {
+                if(s.charAt(s.length() - 1) == arr[j])continue;
+                else {
+                    String temp = new String(s);
+                    s = s + ""+arr[j];
+                    helper(s, list, n);
+                    s = temp;
+                }
+            }
+        }
+    }
 }
