@@ -108,4 +108,27 @@ public class Easy {
         }
         return key;
     }
+
+    //https://leetcode.com/problems/delete-columns-to-make-sorted/
+    public int minDeletionSize(String[] strs) {
+        int n = strs.length;
+        int m = strs[0].length();
+        int count = 0;
+        for(int j = 0; j < m; j++) {
+            char prev = '-';
+            for(int i = 0; i < n; i++) {
+                char ch = strs[i].charAt(j);
+                if(prev == '-') {
+                    prev = ch;
+                    continue;
+                }
+                if(ch < prev) {
+                    count++;
+                    break;
+                }
+                prev = ch;
+            }
+        }
+        return count;
+    }
 }

@@ -1,9 +1,6 @@
 package com.datastructures.graph;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class Medium {
 
@@ -260,6 +257,184 @@ public class Medium {
 
     public boolean isSafe(int x, int y, int n, int m) {
         if(x < 0 || x >= n || y < 0 || y >= m) return false;
+        return true;
+    }
+
+    //https://leetcode.com/problems/cheapest-flights-within-k-stops/
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
+        HashMap<Integer, List<int[]>> map = new HashMap<>();
+
+        buildGraph(n, map, flights);
+        boolean[] visited = new boolean[n];
+        int[] stops = new int[n];
+        for(int i = 0; i < n; i++) {
+            stops[i] = Integer.MAX_VALUE;
+        }
+        stops[src] = 0;
+        Queue<int[]> q = new LinkedList<>();
+        visited[src] = true;
+        q.offer(new int[]{src, 0, K});
+        int min = Integer.MAX_VALUE;
+
+        while(!q.isEmpty()) {
+
+            int[] curr = q.poll();
+            //System.out.println("curr city "  + curr[0] + " price " + curr[1] + " stops " + curr[2]);
+
+            if(curr[0] == dst && curr[2] >= -1) {
+
+                min = Math.min(min, curr[1]);
+                continue;
+            }
+            if(!map.containsKey(curr[0]) || curr[2] < -1)continue;
+            for(int[] neigh : map.get(curr[0])) {
+                if(stops[neigh[0]] > neigh[1] + curr[1]) {
+                    q.offer(new int[]{neigh[0], neigh[1] + curr[1] , curr[2] - 1});
+                    stops[neigh[0]] = neigh[1] + curr[1];
+                }
+            }
+        }
+        return min == Integer.MAX_VALUE ? -1 : min;
+    }
+
+    public void buildGraph(int n, HashMap<Integer, List<int[]>> map, int[][] flights) {
+
+        for(int[] flight : flights) {
+            int src = flight[0];
+            int dest = flight[1];
+            int price = flight[2];
+            map.putIfAbsent(src, new ArrayList<>());
+            map.get(src).add(new int[]{dest, price});
+        }
+    }
+
+    //https://leetcode.com/problems/find-largest-value-in-each-tree-row/
+    public List<Integer> largestValues(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if(root == null) return result;
+
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while(!q.isEmpty()) {
+            int max = Integer.MIN_VALUE;
+            int size = q.size();
+            while(size > 0) {
+                TreeNode node = q.poll();
+                size--;
+                max = Math.max(max, node.val);
+                if(node.left != null) q.offer(node.left);
+                if(node.right != null) q.offer(node.right);
+            }
+            result.add(max);
+        }
+        return result;
+    }
+
+    //https://leetcode.com/problems/jump-game-iii/
+    public boolean canReach(int[] arr, int start) {
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(start);
+        int n = arr.length;
+        boolean[] visited = new boolean[n];
+        visited[start] = true;
+
+        while(!q.isEmpty()) {
+            int index = q.poll();
+            if(arr[index] == 0) return true;
+            int left = index + arr[index];
+            int right = index - arr[index];
+            if(left < n && !visited[left]) {
+                q.offer(left);
+                visited[left] = true;
+            }
+            if(right >= 0 && !visited[right]) {
+                q.offer(right);
+                visited[right] = true;
+            }
+        }
+        return false;
+    }
+
+    //https://leetcode.com/problems/binary-tree-right-side-view/
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if(root == null) return res;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+
+        while(!q.isEmpty()) {
+            int size = q.size();
+            TreeNode prev = null;
+            while(size > 0) {
+                TreeNode node = q.poll();
+                size--;
+                prev = node;
+                if(node.left != null) q.offer(node.left);
+                if(node.right != null) q.offer(node.right);
+            }
+            res.add(prev.val);
+        }
+        return res;
+    }
+
+    //https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        int level = 0;
+        List<List<Integer>> res = new ArrayList<>();
+        if(root == null)return res;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while(!q.isEmpty()) {
+            int size = q.size();
+            List<Integer> list = new ArrayList<>();
+
+            while(size > 0) {
+                TreeNode node = q.poll();
+                size--;
+                if(level % 2 == 0)list.add(node.val);
+                else list.add(0, node.val);
+                if(node.left != null) q.offer(node.left);
+                if(node.right != null) q.offer(node.right);
+            }
+            level++;
+            res.add(list);
+        }
+        return res;
+    }
+
+    //https://leetcode.com/problems/is-graph-bipartite/
+    public boolean isBipartite(int[][] graph) {
+        int n = graph.length;
+        int[] color = new int[n];
+        Arrays.fill(color, -1);
+        int count = 0;
+
+        for(int i = 0; i < n; i++) {
+            if(color[i] != -1) continue;
+            if(!bfs(i, graph, n, color))return false;
+        }
+        return  true;
+    }
+
+    public boolean bfs(int node, int[][] graph, int n, int[] color) {
+        Queue<int[]> q = new LinkedList<>();
+
+        q.offer(new int[]{node, 0});
+        color[node] = 0;
+
+        while(!q.isEmpty()) {
+            int[] curr = q.poll();
+            int c = curr[1];
+            for(int neigh : graph[curr[0]]) {
+                if(color[neigh] == -1) {
+                    color[neigh] = c ^ 1;
+                    q.offer(new int[]{neigh, color[neigh]});
+                }
+                else if(color[neigh] == c) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 

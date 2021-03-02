@@ -267,4 +267,36 @@ public class Medium {
         }
         return result;
     }
+
+    //https://leetcode.com/problems/merge-intervals/
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+        Stack<int[]> stack = new Stack<>();
+        int prev = -1;
+        int i = 0;
+
+        for(; i < intervals.length; i++) {
+            prev = intervals[i][0];
+
+            if(stack.isEmpty()) {
+                stack.push(intervals[i]);
+            }
+            else {
+                int end = intervals[i][1];
+                while(!stack.isEmpty() && stack.peek()[1] >= intervals[i][0]) {
+                    int[] temp = stack.pop();
+                    prev = temp[0];
+                    end = Math.max(end, temp[1]);
+                }
+                stack.push(new int[]{prev, end});
+            }
+        }
+        int[][] result = new int[stack.size()][2];
+        i = stack.size() - 1;
+
+        while(!stack.isEmpty()) {
+            result[i--] = stack.pop();
+        }
+        return result;
+    }
 }

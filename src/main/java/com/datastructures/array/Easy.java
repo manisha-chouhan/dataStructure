@@ -117,4 +117,85 @@ public class Easy {
         }
         return true;
     }
+
+    //https://leetcode.com/problems/available-captures-for-rook/
+    public int numRookCaptures(char[][] board) {
+        int n = board.length;
+        int m = board[0].length;
+
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                if(board[i][j] == 'R') {
+                    int row = findInRow(i, j, board, n, m);
+                    int col = findInCol(i, j, board, n, m);
+                    return row + col;
+                }
+            }
+
+        }
+        return 0;
+    }
+
+    public int findInRow(int x, int y, char[][] board, int n, int m) {
+        //find plus row
+        int i = x;
+        int count = 0;
+        for(int j = y + 1; j < m; j++) {
+            if(board[i][j] == 'p') {
+                count++;
+                break;
+            }
+            else if(board[i][j] == 'B')break;
+        }
+
+        for(int j = y - 1; j >= 0; j--) {
+            if(board[i][j] == 'p') {
+                count++;
+                break;
+            }
+            else if(board[i][j] == 'B')break;
+        }
+        return count;
+    }
+
+    public int findInCol(int x, int y, char[][] board, int n, int m) {
+        //find plus row
+        int j = y;
+        int count = 0;
+        for(int i = x + 1; i < n; i++) {
+            if(board[i][j] == 'p') {
+                count++;
+                break;
+            }
+            else if(board[i][j] == 'B')break;
+        }
+
+        for(int i = x - 1; i >= 0; i--) {
+            if(board[i][j] == 'p') {
+                count++;
+                break;
+            }
+            else if(board[i][j] == 'B')break;
+        }
+        return count;
+    }
+
+    //https://leetcode.com/problems/three-consecutive-odds/
+    public boolean threeConsecutiveOdds(int[] arr) {
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] % 2 != 0) {
+                int j = i + 1;
+                boolean flag = true;
+                while(j < i + 3 && j < arr.length) {
+                    if(arr[j] % 2 == 0) {
+                        flag = false;
+                        break;
+                    }
+                    j++;
+                }
+                if(flag && i + 2 < arr.length) return true;
+            }
+        }
+        return false;
+    }
 }
