@@ -299,4 +299,40 @@ public class Medium {
         }
         return result;
     }
+
+    public int maxNumberOfFamilies(int n, int[][] reservedSeats) {
+        int res = 2*n;
+        Map<Integer,Set<Integer>> map = new HashMap<>();
+        for (int[] e: reservedSeats){
+            int r = e[0], c = e[1];
+            map.putIfAbsent(r, new HashSet<>());
+            map.get(r).add(c);
+        }
+        for (int x: map.keySet()){
+            res -= 2-deduct(map.get(x));
+        }
+        return res;
+    }
+    int deduct(Set<Integer> set){
+        int mid = 1, left = 1, right = 1;
+        if (set.contains(2) || set.contains(3)){
+            left = 0;
+        }
+        if (set.contains(4) || set.contains(5)){
+            mid = 0;
+            left = 0;
+        }
+        if (set.contains(6) || set.contains(7)){
+            mid = 0;
+            right = 0;
+        }
+        if (set.contains(8) || set.contains(9)){
+            right = 0;
+        }
+        if (mid == 1){
+            return Math.max(left+right,mid);
+        }else{
+            return Math.max(left,right);
+        }
+    }
 }

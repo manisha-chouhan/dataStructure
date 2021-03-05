@@ -438,4 +438,109 @@ public class Medium {
         return true;
     }
 
+    //https://leetcode.com/problems/course-schedule/
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        int count = 0;
+        int[] inDegree = new int[numCourses];
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        buildGraph(inDegree, prerequisites, map);
+        Queue<Integer> q = new LinkedList<>();
+        for(int i = 0; i < numCourses; i++) {
+            if(inDegree[i] == 0) q.offer(i);
+        }
+        while(!q.isEmpty()) {
+            int curr = q.poll();
+            count++;
+            if(!map.containsKey(curr)) continue;
+            for(int neigh : map.get(curr)) {
+                inDegree[neigh]--;
+                if(inDegree[neigh] == 0) {
+                    q.offer(neigh);
+                }
+            }
+        }
+
+        return count == numCourses;
+    }
+
+    public void buildGraph(int[] inDegree, int[][] prerequisites, HashMap<Integer, List<Integer>> map) {
+        for(int[] course : prerequisites) {
+            int a = course[0];
+            int b = course[1];
+            map.putIfAbsent(b, new ArrayList<>());
+            map.get(b).add(a);
+            inDegree[a]++;
+        }
+    }
+
+    //https://leetcode.com/problems/course-schedule-ii/
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        int index = 0;
+        int[] result = new int[numCourses];
+        int count = 0;
+        int[] inDegree = new int[numCourses];
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+
+        buildGraph(inDegree, prerequisites, map);
+
+        Queue<Integer> q = new LinkedList<>();
+
+        for(int i = 0; i < numCourses; i++) {
+            if(inDegree[i] == 0) q.offer(i);
+        }
+
+        while(!q.isEmpty()) {
+            int curr = q.poll();
+            result[index++] = curr;
+            count++;
+            if(!map.containsKey(curr)) continue;
+            for(int neigh : map.get(curr)) {
+                inDegree[neigh]--;
+                if(inDegree[neigh] == 0) {
+                    q.offer(neigh);
+                }
+            }
+        }
+
+        return count ==  numCourses ? result : new int[0];
+    }
+
+    //https://leetcode.com/problems/shortest-path-in-binary-matrix/
+    int[][] direcs = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        if(grid[0][0] == 1)return -1;
+        int n = grid.length;
+        int[][] distance = new int[n][n];
+
+        for(int i = 0; i < n; i++) {
+            Arrays.fill(distance[i], Integer.MAX_VALUE);
+        }
+
+        distance[0][0] = 0;
+
+        int minDistance = Integer.MAX_VALUE;
+
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0,0,1});
+        while(!q.isEmpty()) {
+            int[] curr = q.poll();
+            if(curr[0] == n - 1 && curr[1] == n - 1) {
+                minDistance = Math.min(minDistance, curr[2]);
+                continue;
+            }
+            for(int k = 0; k < 8; k++) {
+                int x = curr[0] + direcs[k][0];
+                int y = curr[1] + direcs[k][1];
+                if(x < 0 || x >= n || y < 0 || y >= n || grid[x][y] == 1)continue;
+                if(distance[x][y] > 1 + curr[2]) {
+
+                    distance[x][y] = 1 + curr[2];
+                    q.offer(new int[]{x, y, distance[x][y]});
+                }
+            }
+        }
+        return minDistance == Integer.MAX_VALUE ? -1 : minDistance;
+    }
+
 }

@@ -131,4 +131,38 @@ public class Easy {
         }
         return count;
     }
+
+    //https://leetcode.com/problems/replace-all-s-to-avoid-consecutive-repeating-characters/
+    public String modifyString(String s) {
+        int n = s.length();
+        if(n == 1) {
+            if(s.charAt(0) == '?') return "a";
+            return s;
+        }
+        StringBuilder sb = new StringBuilder(s);
+
+        for(int i = 0; i < s.length(); i++) {
+            if(s.charAt(i) == '?') {
+                if(i == 0) {
+                    if(s.charAt(i+1) != 'a')sb.setCharAt(i, 'a');
+                    else sb.setCharAt(i, 'b');
+                }
+                else if(i == s.length()-1) {
+                    char prev =  sb.charAt(i - 1);
+                    if(prev != 'a')sb.setCharAt(i, 'a');
+                    else sb.setCharAt(i, 'b');
+                }
+                else {
+                    char prev = sb.charAt(i - 1);
+                    char next = s.charAt(i + 1);
+                    int j = 0;
+                    while((char)(j+'a') == prev || (char)(j+'a') == next) {
+                        j++;
+                    }
+                    sb.setCharAt(i, (char)(j  + 'a'));
+                }
+            }
+        }
+        return sb.toString();
+    }
 }
