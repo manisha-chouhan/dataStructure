@@ -193,4 +193,74 @@ public class Medium {
             }
         }
     }
+
+    //https://leetcode.com/problems/longest-substring-without-repeating-characters/
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length();
+        if(n == 0 || n == 1) return n;
+        HashMap<Character, Integer> map = new HashMap<>();
+        int i = 0;
+        int j = 0;
+        int max = 1;
+
+        while(i <= j && j < n) {
+            char ch = s.charAt(j);
+            if(map.containsKey(ch) && map.get(ch) >= i) {
+                max = Math.max(max, j - i);
+                i = map.get(ch) + 1;
+            }
+            map.put(ch, j);
+            j++;
+        }
+        max = Math.max(max, j - i);
+        return max;
+    }
+
+    //https://leetcode.com/problems/simplify-path/
+    public String simplifyPath(String path) {
+        Stack<String> stack = new Stack<>();
+        int len = path.length();
+        for(int i = 0; i < len; ) {
+            char ch = path.charAt(i);
+            if(ch == '/') {
+                while(i < len && path.charAt(i) == ch) {
+                    i++;
+                }
+            }
+            else if(ch == '.') {
+                int count = 0;
+                StringBuilder sb = new StringBuilder();
+                boolean onlydot = true;
+                while(i < len && path.charAt(i) != '/') {
+                    char c = path.charAt(i);
+                    if(c != '.') onlydot = false;
+                    sb.append(c);
+                    i++;
+                    count++;
+                }
+                if(!onlydot || count > 2) {
+                    stack.push(sb.toString());
+                }
+                else if(count == 2) {
+                    if(!stack.isEmpty()) stack.pop();
+                }
+
+            }
+            else {
+                StringBuilder sb = new StringBuilder();
+                while(i < len && path.charAt(i) != '/') {
+                    sb.append(path.charAt(i));
+                    i++;
+                }
+                stack.push(sb.toString());
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        while(!stack.isEmpty()) {
+            sb.insert(0, stack.pop());
+            sb.insert(0, "/");
+        }
+        return  sb.length() == 0 ? "/" : sb.toString();
+    }
 }

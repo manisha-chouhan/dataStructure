@@ -543,4 +543,127 @@ public class Medium {
         return minDistance == Integer.MAX_VALUE ? -1 : minDistance;
     }
 
+    //https://leetcode.com/problems/shortest-path-with-alternating-colors/
+    public int[] shortestAlternatingPaths(int n, int[][] red_edges, int[][] blue_edges) {
+        //0 -> red, 1 -> blue
+        HashMap<Integer, List<Integer>> blueMap = new HashMap<>();
+        HashMap<Integer, List<Integer>> redMap = new HashMap<>();
+
+        buildGraph(red_edges, redMap);
+        buildGraph(blue_edges, blueMap);
+
+        int[] result = new int[n];
+        int[] blueDist = new int[n];
+        int[] redDist = new int[n];
+
+        Arrays.fill(blueDist, Integer.MAX_VALUE);
+        Arrays.fill(redDist, Integer.MAX_VALUE);
+
+        blueDist[0] = 0;
+        redDist[0] = 0;
+
+        // 0 -> node, 1 -> dist, 2 -> color
+
+        Queue<int[]> q = new LinkedList<>();
+        if(redMap.containsKey(0)) {
+            for(int redNeigh : redMap.get(0)) {
+                q.offer(new int[] {redNeigh, 1, 0});
+                redDist[redNeigh] = 1;
+            }
+        }
+
+        if(blueMap.containsKey(0)) {
+            for(int blueNeigh : blueMap.get(0)) {
+                q.offer(new int[] {blueNeigh, 1, 1});
+                blueDist[blueNeigh] = 1;
+            }
+        }
+
+
+        while(!q.isEmpty()) {
+            int[] curr = q.poll();
+            int node = curr[0];
+            if(curr[2] == 1) {
+                if(redMap.containsKey(node)) {
+                    for(int redNeigh : redMap.get(node)) {
+                        if(redDist[redNeigh] > 1 + curr[1]) {
+                            redDist[redNeigh] = 1 + curr[1];
+                            q.offer(new int[] { redNeigh, redDist[redNeigh], 0 });
+                        }
+                    }
+                }
+            }
+            else {
+                if(blueMap.containsKey(node)) {
+                    for(int blueNeigh : blueMap.get(node)) {
+                        if(blueDist[blueNeigh] > 1 + curr[1]) {
+                            blueDist[blueNeigh] = 1 + curr[1];
+                            q.offer(new int[] { blueNeigh, blueDist[blueNeigh], 1 });
+                        }
+                    }
+                }
+            }
+        }
+        for(int i = 1; i < n; i++) {
+            if(redDist[i] == Integer.MAX_VALUE && blueDist[i] == Integer.MAX_VALUE) result[i] = -1;
+            else result[i] = Math.min(redDist[i], blueDist[i]);
+        }
+        return result;
+
+    }
+
+    public void buildGraph(int[][] edges, HashMap<Integer, List<Integer>> map) {
+
+        for(int[] edge : edges) {
+            int i = edge[0];
+            int j = edge[1];
+            map.putIfAbsent(i, new ArrayList<>());
+            map.get(i).add(j);
+        }
+    }
+
+
+    //https://leetcode.com/problems/k-similar-strings/
+    public int kSimilarity(String A, String B) {
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put(A, 0);
+
+        Queue<String> q = new LinkedList<>();
+        q.offer(A);
+
+        while(!q.isEmpty()) {
+            String s = q.poll();
+            if(s.equals(B)) return map.get(s);
+            for(String neigh : getNeighbours(s, B)) {
+                if(!map.containsKey(neigh)) {
+                    map.put(neigh, map.get(s) + 1);
+                    q.offer(neigh);
+                }
+            }
+        }
+        return -1;
+    }
+
+    public List<String> getNeighbours(String S, String target) {
+        List<String> list = new ArrayList<>();
+        int i = 0;
+        for(; i < S.length(); i++) {
+            if(S.charAt(i) != target.charAt(i)) break;
+        }
+        char[] arr = S.toCharArray();
+        for(int j = i + 1; j < S.length(); j++) {
+            if(arr[j] == target.charAt(i)) {
+                swap(arr, i, j);
+                list.add(new String(arr));
+                swap(arr, i, j);
+            }
+        }
+        return list;
+    }
+
+    public void swap(char[] arr, int i, int j) {
+        char temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
 }

@@ -335,4 +335,188 @@ public class Medium {
             return Math.max(left,right);
         }
     }
+
+    //https://leetcode.com/problems/next-permutation/
+    public void nextPermutation(int[] nums) {
+        int len = nums.length;
+        int index = findSmall(nums, len);
+        if(index < 0) {
+            Arrays.sort(nums);
+            return;
+        }
+        int j = -1;
+        int smallestBig = Integer.MAX_VALUE;
+        for(int i = index + 1; i < len; i++) {
+            if(smallestBig > nums[i] && nums[i] > nums[index]) {
+                j = i;
+                smallestBig = nums[i];
+            }
+        }
+        //System.out.println(index);
+        swap(nums, index, j);
+        Arrays.sort(nums, index + 1, len);
+        return;
+    }
+
+    public int findSmall(int[] nums, int len) {
+        for(int i = len - 2; i >= 0; i--) {
+            if(nums[i] < nums[i + 1]) return i;
+        }
+
+        return -1;
+    }
+
+    public void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    //https://leetcode.com/problems/insert-interval/
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        Stack<int[]> stack = new Stack<>();
+        boolean merged = false;
+        for(int i = 0; i < intervals.length; i++) {
+            int[] curr = intervals[i];
+            if(merged) {
+                int start = curr[0];
+                int end = curr[1];
+
+                while(!stack.isEmpty() && doOverlap(curr, stack.peek())) {
+                    int[] temp = stack.pop();
+                    start = Math.min(start, temp[0]);
+                    end = Math.max(temp[1], end);
+                }
+                stack.push(new int[]{start, end});
+            }
+            else {
+                if(curr[0] < newInterval[0]) {
+                    stack.push(curr);
+                }
+                else {
+                    if(doOverlap(curr, newInterval)) {
+                        int start = Math.min(newInterval[0], curr[0]);
+                        int end = Math.max(newInterval[1], curr[1]);
+
+                        while(!stack.isEmpty() && doOverlap(newInterval, stack.peek())) {
+                            int[] temp = stack.pop();
+                            start = Math.min(start, temp[0]);
+                            end = Math.max(temp[1], end);
+                        }
+                        stack.push(new int[]{start, end});
+                    }
+                    else {
+                        int start = newInterval[0];
+                        int end = newInterval[1];
+
+                        while(!stack.isEmpty() && doOverlap(newInterval, stack.peek())) {
+                            int[] temp = stack.pop();
+                            start = Math.min(start, temp[0]);
+                            end = Math.max(temp[1], end);
+                        }
+                        stack.push(new int[]{start, end});
+                        stack.push(curr);
+                    }
+                    merged = true;
+                }
+            }
+        }
+
+        if(!merged) {
+            int start = newInterval[0];
+            int end = newInterval[1];
+
+            while(!stack.isEmpty() && doOverlap(newInterval, stack.peek())) {
+                int[] temp = stack.pop();
+                start = Math.min(start, temp[0]);
+                end = Math.max(temp[1], end);
+            }
+            stack.push(new int[]{start, end});
+        }
+
+        int n = stack.size();
+        int[][] result = new int[n][2];
+        int i = n - 1;
+        while(!stack.isEmpty()) {
+            result[i] = stack.pop();
+            i--;
+        }
+        return result;
+    }
+
+    public boolean doOverlap(int[] arr1, int[] arr2) {
+        if(arr1[0] > arr2[1] || arr1[1] < arr2[0]) return false;
+        if(arr2[0] > arr1[1] || arr2[1] < arr1[0]) return false;
+        return true;
+    }
+
+    //https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+    public int[] searchRange(int[] nums, int target) {
+        int index = binarySearch(nums, target);
+        if(index == -1) return new int[]{-1,- 1};
+        int i = index - 1;
+        int j = index + 1;
+        while(i >= 0) {
+            if(nums[i] != target)break;
+            i--;
+        }
+        while(j < nums.length) {
+            if( nums[j] != target) break;
+            j++;
+        }
+
+        return new int[]{i + 1, j - 1};
+    }
+
+    public int binarySearch(int[] nums, int target) {
+        int l = 0;
+        int r = nums.length - 1;
+        while(l <= r) {
+            int mid = l + (r - l) / 2;
+            if( nums[mid] == target ) return mid;
+            if( nums[mid] < target ) l = mid + 1;
+            else r = mid - 1;
+        }
+        return -1;
+    }
+
+    //https://leetcode.com/problems/evaluate-reverse-polish-notation/
+    public int evalRPN(String[] tokens) {
+        Stack<String> stack = new Stack<>();
+        for(String token : tokens) {
+            int num1 = 0;
+            int num2 = 0;
+            int num = 0;
+            switch(token) {
+                case "+" :
+                    num1 = Integer.parseInt(stack.pop());
+                    num2 = Integer.parseInt(stack.pop());
+                    num = num1 + num2;
+                    stack.push(num + "");
+                    break;
+                case "-" :
+                    num1 = Integer.parseInt(stack.pop());
+                    num2 = Integer.parseInt(stack.pop());
+                    num = num2 - num1;
+                    stack.push(num + "");
+                    break;
+                case "*" :
+                    num1 = Integer.parseInt(stack.pop());
+                    num2 = Integer.parseInt(stack.pop());
+                    num = num2 * num1;
+                    stack.push(num + "");
+                    break;
+                case "/" :
+                    num1 = Integer.parseInt(stack.pop());
+                    num2 = Integer.parseInt(stack.pop());
+                    num = num2 / num1;
+                    stack.push(num + "");
+                    break;
+                default :
+                    stack.push(token);
+                    break;
+            }
+        }
+        return Integer.parseInt(stack.pop());
+    }
 }

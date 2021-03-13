@@ -198,4 +198,44 @@ public class Easy {
         }
         return false;
     }
+
+    //https://leetcode.com/problems/water-bottles/
+    public int numWaterBottles(int numBottles, int numExchange) {
+        int count = numBottles;
+        int bottles = numBottles;
+        int fullBottles = 0;
+
+        while(bottles >= numExchange) {
+            int temp = bottles;
+            while(temp >= numExchange) {
+                temp -= numExchange;
+                fullBottles += 1;
+            }
+            count += fullBottles;
+            bottles = temp + fullBottles;
+
+            fullBottles = 0;
+        }
+        return count;
+    }
+
+    //https://leetcode.com/problems/get-maximum-in-generated-array/
+    public int getMaximumGenerated(int n) {
+        int[] nums = new int[n + 1];
+        if(n == 0) return 0;
+        nums[0] = 0;
+        nums[1] = 1;
+        int max = 1;
+        for(int i = 2; i <= n; i++) {
+            if(i % 2 == 0) {
+                nums[i] = nums[i/2];
+            }
+            else {
+                int j = (i - 1)/2;
+                nums[i] = nums[j] + nums[j + 1];
+            }
+            max = Math.max(max, nums[i]);
+        }
+        return max;
+    }
 }

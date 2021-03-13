@@ -22,6 +22,4 @@ public class TestClass {
 
     interface Adder<T> { T add(T a, T b); }
 
-
-
 }
